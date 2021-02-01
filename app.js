@@ -97,7 +97,7 @@ app.get('/api/info', (request, response) => {
 })
 
 app.get('/health', (req, res) => {
-   res.send('ok')
+  res.send('ok')
 })
 
 app.use(handlers.unknownEndpoint)
