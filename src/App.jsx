@@ -24,17 +24,17 @@ const App = () => {
       if(window.confirm(replaceMessage(existingPerson.name))) {
         const updatedPerson = { ...existingPerson, number: newNumber }
         peopleService.update(existingPerson.id, updatedPerson)
-            .then(updatedPerson => {
-              setPersons(persons.map(p => p.id !== existingPerson.id ? p : updatedPerson))
-              setFilteredPersons(filteredPersons.map(p => p.id !== existingPerson.id ? p : updatedPerson))
-            })
-            .catch(error => {
-              console.log(error)
-              setErrorMessage(`Information of ${existingPerson.name} has already been removed from server.`)
-              setTimeout(() => {
-                setErrorMessage(null)
-              }, 5000)
-            })
+          .then(updatedPerson => {
+            setPersons(persons.map(p => p.id !== existingPerson.id ? p : updatedPerson))
+            setFilteredPersons(filteredPersons.map(p => p.id !== existingPerson.id ? p : updatedPerson))
+          })
+          .catch(error => {
+            console.log(error)
+            setErrorMessage(`Information of ${existingPerson.name} has already been removed from server.`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          })
       }
       return
     }
@@ -43,22 +43,22 @@ const App = () => {
     setNewNumber('')
 
     peopleService.create({ name: newName, number: newNumber })
-        .then(createdPerson => {
-          setPersons(persons.concat(createdPerson))
-          if (createdPerson.name.toLocaleLowerCase().startsWith(filteredValue.toLocaleLowerCase())) {
-            setFilteredPersons(filteredPersons.concat(createdPerson))
-          }
-          setSuccessMessage(`Added ${newName}`)
-          setTimeout(() => {
-            setSuccessMessage(null)
-          }, 5000)
-        })
-        .catch(error => {
-          setErrorMessage(error.response.data.error)
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-        })
+      .then(createdPerson => {
+        setPersons(persons.concat(createdPerson))
+        if (createdPerson.name.toLocaleLowerCase().startsWith(filteredValue.toLocaleLowerCase())) {
+          setFilteredPersons(filteredPersons.concat(createdPerson))
+        }
+        setSuccessMessage(`Added ${newName}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        setErrorMessage(error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
   }
 
   const handleNameChange = (event) => {
@@ -80,39 +80,39 @@ const App = () => {
 
   const deletePerson = (id) => {
     peopleService.deletePerson(id)
-        .then(response => {
-              console.log(response)
-              setPersons(persons.filter(p => p.id !== id))
-              setFilteredPersons(filteredPersons.filter(p => p.id !== id))
-            }
-        )
+      .then(response => {
+        console.log(response)
+        setPersons(persons.filter(p => p.id !== id))
+        setFilteredPersons(filteredPersons.filter(p => p.id !== id))
+      }
+      )
   }
 
   useEffect(() => {
     peopleService
-        .getAll()
-        .then(response => {
-          setPersons(response)
-          setFilteredPersons(response)
-        })
+      .getAll()
+      .then(response => {
+        setPersons(response)
+        setFilteredPersons(response)
+      })
   }, [])
 
   return (
-      <div>
-        <h2>Phonebook</h2>
-        <Notification message={successMessage} isError={false}/>
-        <Notification message={errorMessage} isError={true}/>
-        <SearchFilter filteredValue={filteredValue} filteredValueChange={filteredValueChange} />
-        <h3>Add a new</h3>
-        <PersonForm
-            newName={newName}
-            handleNameChange={handleNameChange}
-            newNumber={newNumber}
-            handleNumberChange={handleNumberChange}
-            addPerson={addPerson} />
-        <h2>Numbers</h2>
-        <Persons filteredPersons={filteredPersons} deletePerson={deletePerson} />
-      </div>
+    <div>
+      <h2>Phonebook</h2>
+      <Notification message={successMessage} isError={false}/>
+      <Notification message={errorMessage} isError={true}/>
+      <SearchFilter filteredValue={filteredValue} filteredValueChange={filteredValueChange} />
+      <h3>Add a new</h3>
+      <PersonForm
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+        addPerson={addPerson} />
+      <h2>Numbers</h2>
+      <Persons filteredPersons={filteredPersons} deletePerson={deletePerson} />
+    </div>
   )
 }
 

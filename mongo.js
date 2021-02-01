@@ -8,12 +8,10 @@ const generateId = () => {
   return Math.floor(Math.random() * Math.floor(1000000))
 }
 
-const password = process.argv[2]
 const newPersonName = process.argv[3]
 const newPersonNumber = process.argv[4]
 
-const url =
-    `mongodb+srv://phonebookuser:${password}@cluster0.scmss.mongodb.net/phonebook-app?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
