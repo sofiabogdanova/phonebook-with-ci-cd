@@ -1,19 +1,3 @@
-// const express = require('express')
-// const app = express()
-//
-// // Heroku dynamically sets a port
-// const PORT = process.env.PORT || 5000
-//
-// app.use(express.static('dist'))
-//
-// app.get('/health', (req, res) => {
-//   res.send('ok')
-// })
-//
-// app.listen(PORT, () => {
-//   console.log('server started on port 5000')
-// })
-
 require('dotenv').config()
 const express = require('express')
 const handlers = require('./handlers')
@@ -26,7 +10,6 @@ morgan.token('body', (req) => {
   }
 })
 const app = express()
-//app.use(express.static('build'))
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
