@@ -1,0 +1,58 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+
+jobs: 
+  simple_deployment_pipeline:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: npm install
+        run: npm install --also=dev
+      - name: lint
+        run: npm run eslint
+      - name: start-prod
+        run: npm run start-prod
+      - name: build
+        run: npm run build
+      - name: deploy
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        uses: akhileshns/heroku-deploy@v3.8.9 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "floating-atoll-45399"
+          heroku_email: "sofia.bogdanova@aalto.fi"
+          healthcheck: "https://floating-atoll-45399.herokuapp.com/health"
+          checkstring: "ok"
+          rollbackonhealthcheckfailed: true
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        uses: anothrNick/github-tag-action@1.33.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: The job has succeded
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: ${{ success() }}
+      - name: The job has failed
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: ${{ failure() }}
